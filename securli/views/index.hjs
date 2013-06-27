@@ -2,10 +2,43 @@
 <html>
   <head>
     <title>{{ title }}</title>
+    <link href="//netdna.bootstrapcdn.com/twitter-bootstrap/2.3.2/css/bootstrap-combined.no-icons.min.css" rel="stylesheet">
     <link rel='stylesheet' href='/stylesheets/style.css' />
   </head>
   <body>
     <h1>{{ title }}</h1>
     <p>Welcome to {{ title }}</p>
+    <form method="post">
+        <p>Send a secure message</p>
+        <div>
+            <label for="to">recipient:</label>
+            <div>
+                <input name="email" type="email" placeholder="name@example.com" />
+            </div>
+            <textarea id="msg" placeholder="Type your message here"></textarea>
+            <input id="message" value="" type="hidden" name="message" />
+            <div>
+                <input id="btn-encrypt" onclick="encrypt(); return false;" type="submit" value="encrypt" />
+                <input id="btn-send" type="submit" value="send messsage" disabled="disabled" />
+            </div>
+        </div>
+        
+    </form>
+    <script src="/javascripts/jquery-2.0.2.js"></script>
+    <script src="/javascripts/sjcl.js"></script>
+    <script>
+        function encrypt() {
+            var encrypted,
+                password = prompt('please enter a secure password'),
+                $secret = $('#msg');
+                
+            encrypted = sjcl.encrypt( password, $secret.val() );
+            $secret.val( $secret.val().replace(/./g, '*' ) );
+            
+            $('#message').val(encrypted);
+            $('#btn-encrypt').attr('disabled', true );
+            $('#btn-send').removeAttr('disabled');            
+        }
+    </script>
   </body>
 </html>
