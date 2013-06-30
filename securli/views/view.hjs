@@ -8,22 +8,28 @@
   <body>
     <h1>{{ title }}</h1>
     <p>Welcome to {{ title }}</p>
-    <form method="post">
-        <p>Your message:</p>
-        <div>
-            <textarea readonly="true" id="msg" placeholder="***"></textarea>
-            <input type="hidden" value="{{ message }}" id="encrypted" />
-        </div>
-        <p><a href="/delete/{{id}}">delete this message</a></p>
-        <p>create a new message <a href="/">here</a></p>
-
-    </form>
+    <div id="error" style="display:none;" class="alert alert-error">
+        <p>The password you typed was invalid! try <a href="/view/{{id}}">again</a></p>
+    </div>
+    <p>Your message:</p>
+    <div>
+        <textarea readonly="true" id="msg" placeholder="***"></textarea>
+        <input type="hidden" value="{{ message }}" id="encrypted" />
+    </div>
+    <p><a class="btn" href="/delete/{{id}}">delete this message</a></p>
+    <p>create a new message <a href="/">here</a></p>
     <script src="/javascripts/jquery-2.0.2.js"></script>
     <script src="/javascripts/sjcl.js"></script>
     <script>
-        var passwd = prompt('Please enter the password'),
+        var passwd = prompt('Please enter the password'), message;
+
+        try {
             message = sjcl.decrypt( passwd, $('#encrypted').val() );
             $('#msg').val(message);
+        }
+        catch(err){
+            $('#error').show();
+        }
     </script>
   </body>
 </html>

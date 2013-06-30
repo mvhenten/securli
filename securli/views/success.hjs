@@ -7,7 +7,10 @@
   </head>
   <body>
     <h1>{{ title }}</h1>
-    <p>Message sent to message to {{ email }}!</p>
-    <p>You may view your message <a href="/view/{{ id }}">here</a></p>
+    <div class="alert alert-success">
+      <p>Message sent to message to {{ email }}!</p>
+      <p>You may view your message <a href="/view/{{ id }}">here</a>.</p>
+      <p><a class="btn" href="/delete/{{id}}">delete this message</a></p>
+    </div>
   </body>
 </html>
