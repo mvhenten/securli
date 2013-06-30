@@ -6,7 +6,9 @@
 var express = require('express')
   , routes = require('./routes')
   , user = require('./routes/user')
+  , util = require('util')
   , http = require('http')
+  , Message = require('./models/message')
   , path = require('path');
 
 var app = express();
@@ -30,8 +32,31 @@ if ('development' == app.get('env')) {
   app.use(express.errorHandler());
 }
 
-app.get('/', routes.index);
-app.get('/users', user.list);
+
+app.get('/', function( req, res ){
+  res.render('index', { title: 'Securli' });
+});
+
+app.post('/', function( req, res ){
+    if ( req.body.message && req.body.email ) {
+        util.log('creating new message for: ' + req.body.email );
+        
+        Message.create( req.body, function( err, data ){
+            res.redirect( '/success/' + data.id );
+            
+            return;
+        });
+    }
+    
+    res.redirect( '/?error='  + ( req.body.message ? 'email' : 'message' ) );
+});
+
+
+app.get('/success/:id', function( req, res ){
+  res.render('index', { title: 'Securli' });
+});
+
+
 
 http.createServer(app).listen(app.get('port'), function(){
   console.log('Express server listening on port ' + app.get('port'));
