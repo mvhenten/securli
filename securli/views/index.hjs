@@ -15,7 +15,7 @@
             <div>
                 <input name="email" type="email" placeholder="name@example.com" />
             </div>
-            <textarea id="msg" placeholder="Type your message here"></textarea>
+            <textarea maxlength="140" id="msg" placeholder="Type your message here"></textarea>
             <input id="message" value="" type="hidden" name="message" />
             <div>
                 <input id="btn-encrypt" onclick="encrypt(); return false;" type="submit" value="encrypt" />
@@ -32,6 +32,10 @@
                 password = prompt('please enter a secure password'),
                 $secret = $('#msg');
                 
+            if( $secret.val().lenght > 140 ){
+              alert('The message you typed is too long!');
+            }
+
             encrypted = sjcl.encrypt( password, $secret.val() );
             $secret.val( $secret.val().replace(/./g, '*' ) );
             

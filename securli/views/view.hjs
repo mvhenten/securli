@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>{{ title }}</title>
+    <link href="//netdna.bootstrapcdn.com/twitter-bootstrap/2.3.2/css/bootstrap-combined.no-icons.min.css" rel="stylesheet">
+    <link rel='stylesheet' href='/stylesheets/style.css' />
+  </head>
+  <body>
+    <h1>{{ title }}</h1>
+    <p>Welcome to {{ title }}</p>
+    <form method="post">
+        <p>Your message:</p>
+        <div>
+            <textarea readonly="true" id="msg" placeholder="***"></textarea>
+            <input type="hidden" value="{{ message }}" id="encrypted" />
+        </div>
+        <p><a href="/delete/{{id}}">delete this message</a></p>
+        <p>create a new message <a href="/">here</a></p>
+
+    </form>
+    <script src="/javascripts/jquery-2.0.2.js"></script>
+    <script src="/javascripts/sjcl.js"></script>
+    <script>
+        var passwd = prompt('Please enter the password'),
+            message = sjcl.decrypt( passwd, $('#encrypted').val() );
+            $('#msg').val(message);
+    </script>
+  </body>
+</html>
