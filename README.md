@@ -2,9 +2,9 @@ Securli - a simple service to send encrypted messages
 -----------------------------------------------------
 
 This app is of course a proof-of-concept. The idea is to encrypt short messages
-using the [http://crypto.stanford.edu/sjcl/](Stanford Javascript Crypto Library)
+using the [Stanford Javascript Crypto Library](http://crypto.stanford.edu/sjcl/)
 
-Javascript encryption is [http://www.matasano.com/articles/javascript-cryptography/](by no means secure).
+Javascript encryption is [by no means secure](http://www.matasano.com/articles/javascript-cryptography/).
 
 ### installation
 
