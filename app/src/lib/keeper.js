@@ -5,11 +5,11 @@ var states = {};
 
 var Storage = {
     set: function(name, value) {
-        window.localStorage.setItem(name, JSON.stringify(value));
+        window.sessionStorage.setItem(name, JSON.stringify(value));
     },
     
     get: function(name) {
-        var val = window.localStorage.getItem(name);
+        var val = window.sessionStorage.getItem(name);
         if (val) return JSON.parse(val);
     }
 };
@@ -21,16 +21,18 @@ module.exports.getStore = function(Store) {
         var store = new Store();
         stores[name] = store;
         
-        // store.observe(function(state){
-        //     Storage.set(name, state);
-        // });
+        store.observe(function(state){
+            Storage.set(name, state);
+        });
     }
         
     return stores[name];
 };
 
 module.exports.restoreState = function() {
-    for (var key in stores) {
-        
+    console.log("restoring state");
+    for (let name in stores) {
+        let state = Storage.get(name);
+        if(state) stores[name].setState(state);
     }
-}
+};

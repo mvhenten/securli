@@ -1,11 +1,15 @@
 import { h, Component } from 'preact';
 
-var store = require("../../lib/store/files");
+var files = require("../../lib/store/files");
 var download = require("../../lib/download");
+
+var drive = require("../../lib/google/drive");
+
 
 export default class GoogleFiles extends Component {
 	componentDidMount(){
-		store.observe(this.setState.bind(this));		
+		files.observe(this.setState.bind(this));	
+		drive.listFiles();
 	}
 	
 	getFile(evt) {
@@ -14,19 +18,16 @@ export default class GoogleFiles extends Component {
 	}
 
 	render(){
-		console.log('render render');
 		if(!this.state.files)
 			return <div>authorize to see files</div>;
 			
 		return (
-	          <div class="card darken-1">
-	        	<div class="card-content">
-				<ul class="collection">
+	          <div>
+				<ul class="collection with-header">
 					{this.state.files.map( (file) => {
 						return <li class="collection-item"><a id={file.id} onClick={this.getFile} href={file.id}>{file.name}</a></li>;
 					})}
 				</ul>
-	        	</div>
 			</div>		
 		);
 	}

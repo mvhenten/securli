@@ -3,6 +3,8 @@
 var agent = require("superagent");
 var format = require("util").format;
 var base64 = require('base64-js');
+var auth    = require("../store/auth");
+var uploads = require("../store/upload");
 
 const CHUNK_SIZE = 5e6;
 const DRIVE_URL = "https://www.googleapis.com/upload/drive/v3/files";
@@ -10,7 +12,7 @@ const DRIVE_URL = "https://www.googleapis.com/upload/drive/v3/files";
 function initResume(location, next) {
     agent.put(location)
         .set({
-            Authorization: "Bearer " + window.googleAuthResult.access_token,
+            Authorization: "Bearer " + auth.state.accessToken,
             "Content-Range": "bytes */*",
         })
         .end(next);
@@ -28,13 +30,18 @@ function getChunk(res, headers, fileData) {
         headers["Content-Range"] = format("bytes %s-%s/%s", start, end - 1, fileData.byteLength);
     }
 
+    uploads.setState({
+        status: "Uploading file...",
+        progress: 10 + (Math.round(start/fileData.byteLength*100))
+    });
+
     return fileData.slice(start, end);
 }
 
 function upload(location, fileData, next) {
     initResume(location, function(x, res) {
         var headers = {
-            Authorization: "Bearer " + window.googleAuthResult.access_token,
+            Authorization: "Bearer " + auth.state.accessToken,
             "Content-Encoding": "base64"
         };
 
@@ -56,7 +63,7 @@ function upload(location, fileData, next) {
 module.exports.upload = function initUpload(metadata, data, done) {
     agent.post(DRIVE_URL)
         .set({
-            Authorization: "Bearer " + window.googleAuthResult.access_token,
+            Authorization: "Bearer " + auth.state.accessToken,
             "X-Upload-Content-Type": metadata.type,
             "X-Upload-Content-Length": data.byteLength
         })

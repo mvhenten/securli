@@ -1,30 +1,42 @@
 "use strict";
 
-var api = require("./api");
-
 var auth = require("../store/auth");
-var uploads = require("../store/upload");
 var files = require("../store/files");
+var agent = require("superagent");
 
-auth.observe(function(){
-    api().client.load('drive', 'v3', listFiles);
+var googleAuth = require("./auth");
 
-    uploads.observe(function(state){
-        if (state.done) listFiles();
-    });    
-});
+const DRIVE_URL = "https://www.googleapis.com/drive/v3/files";
 
 
+function requestFiles() {
+    var query = 'mimeType contains "pgp"';
+    
+    if (files.state.query)
+        query = `${query} and name contains "${files.state.query}"`;
+
+    agent.get(DRIVE_URL)
+        .set({
+            Authorization: "Bearer " + auth.state.accessToken,
+        })
+        .query({
+            q: query,
+            pageSize: 25,
+            fields: "nextPageToken, files(id, name)"
+        })
+        .end(function(err, res) {
+            if (err) return console.error(err);
+            files.setState({
+                files: res.body.files,
+                query: ""
+            });
+        });
+    
+}
 
 function listFiles() {
-    var request = api().client.drive.files.list({
-        q: 'name contains "pgp"',
-        'pageSize': 10,
-        'fields': "nextPageToken, files(id, name)"
-    });
-
-    request.execute(function(resp) {
-        files.setState("files", resp.files);
+    googleAuth.refresh(function(){
+        requestFiles();        
     });
 }
 

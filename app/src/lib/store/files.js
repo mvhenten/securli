@@ -5,6 +5,7 @@ import { define } from "../store";
 var keeper = require("../keeper");
 
 var Files = define("Files", {
+    query: String,
     files: Array,
 });
 

@@ -1,9 +1,5 @@
 "use strict";
 
-function isEmpty(obj) {
-    return Object.keys(obj).length === 0 && obj.constructor === Object
-}
-
 function check(name, type, value) {
     if (/^(Boolean|Number|String|RegExp|Array|Object|Date|Function)$/.test(type.name)) {
         if (typeof value === type.name.toLowerCase()) return true;
@@ -99,6 +95,16 @@ export default class Store {
     
     getState(name) {
         return this.state[name];
+    }
+    
+    clearState() {
+        this.state = defineState(this.attributes);
+        this.observers.call(this.state.toPlainObject());
+    }
+    
+    replaceState(state) {
+        this.clearState();
+        this.setState(state);
     }
 
     setState(name, state) {

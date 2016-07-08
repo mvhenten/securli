@@ -5,6 +5,7 @@
 var DriveUpload = require("./google/upload");
 var encryptChunk = require("./crypt").encryptChunk;
 var uploads = require("./store/upload");
+var drive = require("./google/drive");
 
 function bufferToFile(buf, done){
     var data = new Blob([buf]);
@@ -29,10 +30,16 @@ function readFile(file) {
         name: file.name,
         status: "Reading file...",
         done: false,
+        active: true,
         progress: 0
     });
 
     reader.onload = function(evt) {
+        uploads.setState({
+            status: "Encrypting file...",
+            progress: 10
+        });
+
         encryptChunk(evt.target.result, function(nil, crypted){
             bufferToFile(crypted, function(nil, data){
                 var cryptedMetadata = {
@@ -42,7 +49,15 @@ function readFile(file) {
 
                 DriveUpload.upload(cryptedMetadata, data, function(err, res){
                     if (err) console.error("Got err: ", err);
-                    uploads.setState("done", true);
+                    
+                    console.log("done, upload complete", uploads.state.toPlainObject());
+                    uploads.setState({
+                        active: false,
+                        done: true
+                    });
+                    
+                    drive.listFiles();
+
                 });
             });
         });
